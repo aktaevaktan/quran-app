@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #f9fafb;
   --foreground: #171717;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --emerald-primary: #10b981;
+  --emerald-dark: #059669;
+}
+
+.dark {
+  --background: #111827;
+  --foreground: #f3f4f6;
+  --card-bg: #1f2937;
+  --card-border: #374151;
 }
 
 @theme inline {
@@ -12,15 +23,72 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+/* Arabic text styling */
+.arabic-text {
+  font-family: 'Scheherazade New', 'Amiri', 'Traditional Arabic', serif;
+  direction: rtl;
+  text-align: right;
+  line-height: 2;
+}
+
+/* Prayer time card gradient */
+.prayer-card-gradient {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.dark .prayer-card-gradient {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #10b981;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
+
+/* Hijri calendar styling */
+.hijri-date {
+  font-family: 'Amiri', serif;
+}
+
+/* Animation for countdown */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.pulse-countdown {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+/* Tasbih counter animation */
+@keyframes count-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.tasbih-pop {
+  animation: count-pop 0.15s ease-out;
+}
+

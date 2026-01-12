@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// NextAuth.js models
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  password      String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  bookmarks     Bookmark[]
+  settings      UserSettings?
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Surah {
+  id              Int     @id @default(autoincrement())
+  surahNumber     Int     @unique
+  nameArabic      String
+  nameRussian     String
+  nameEnglish     String
+  versesCount     Int
+  revelationType  String  // Meccan or Medinan
+  verses          Verse[]
+}
+
+model Verse {
+  id              Int        @id @default(autoincrement())
+  surahId         Int
+  verseNumber     Int
+  textArabic      String
+  textRussian     String
+  transliteration String
+  surah           Surah      @relation(fields: [surahId], references: [id])
+
+  @@unique([surahId, verseNumber])
+}
+
+model Bookmark {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  surahId     Int
+  verseNumber Int
+  surahName   String
+  verseText   String
+  note        String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, surahId, verseNumber])
+}
+
+model UserSettings {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  latitude          Float?
+  longitude         Float?
+  city              String?
+  country           String?
+  calculationMethod String   @default("Russia")
+  asrMethod         String   @default("Hanafi")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Tasbih counts - stored per user per day
+model TasbihCount {
+  id              String   @id @default(cuid())
+  date            String   // Format: YYYY-MM-DD
+  subhanallah     Int      @default(0)
+  alhamdulillah   Int      @default(0)
+  allahuakbar     Int      @default(0)
+  lailaha         Int      @default(0)
+  astaghfirullah  Int      @default(0)
+  salawat         Int      @default(0)
+  totalCount      Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([date])
+}
